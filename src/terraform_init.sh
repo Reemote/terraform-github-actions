@@ -2,9 +2,10 @@
 
 function terraformInit {
   # Gather the output of `terraform init`.
-  echo "init: info: initializing Terraform configuration in ${tfWorkingDir}"
-  initOutput=$(terraform init -input=false ${*} 2>&1)
+  echo "init: info: initializing Terraform configuration in ${tfWorkingDir} with args ${*} TF_WORKSPACE=${TF_WORKSPACE}"
+  initOutput=$(env TF_WORKSPACE=default terraform init -input=false ${*} 2>&1)
   initExitCode=${?}
+  terraform workspace select ${tfWorkspace} || terraform workspace new ${tfWorkspace}
 
   # Exit code of 0 indicates success. Print the output and exit.
   if [ ${initExitCode} -eq 0 ]; then
